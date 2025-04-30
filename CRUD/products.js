@@ -1,4 +1,4 @@
-import {main,client} from './../helpers/db.js'
+import {main,client} from '../helpers/db.js'
 
 const db = await main()
 
@@ -28,3 +28,7 @@ await insertProducts()
 
 await client.close()
 
+
+export async function updateProducts() {
+    
+}
