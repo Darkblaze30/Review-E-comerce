@@ -1,5 +1,5 @@
-export async function productsCollection(db) {
-  await db.createCollection("products", {
+export class ProductsCollection {
+  #collection = {
     validator: {
       $jsonSchema: {
         bsonType: "object",
@@ -14,6 +14,9 @@ export async function productsCollection(db) {
           "vat",
         ],
         properties: {
+          _id: {
+            bsonType: "objectId",
+          },
           code: {
             bsonType: "string",
           },
@@ -42,7 +45,36 @@ export async function productsCollection(db) {
             bsonType: "number",
           },
         },
+        additionalProperties: false,
       },
     },
-  });
+  };
+  async #create(db) {
+    await db.createCollection("products", this.#collection);
+  }
+
+  async #generateIndexes(db) {
+    const products = db.collection("products");
+
+    await products.createIndexes([
+      {
+        key: { code: 1 },
+        name: "indexCode",
+        unique: true,
+        wiredTigerIndexConfig: 4096,
+        collation: { locale: "es", strength: 1 },
+      },
+      {
+        key: { name: 1 },
+        name: "indexName",
+        wiredTigerIndexConfig: 4096,
+        collation: { locale: "es", strength: 1 },
+      },
+    ]);
+  }
+
+  async generateCollection(db) {
+    await this.#create(db);
+    await this.#generateIndexes(db);
+  }
 }

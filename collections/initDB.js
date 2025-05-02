@@ -1,22 +1,32 @@
-import { usersCollection } from "./users.js";
-import { salesCollection } from "./sales.js";
-import { paymentMetodsCollection } from "./paymentMetods.js";
-import { categoriesCollection } from "./categories.js";
-import { productsCollection } from "./products.js";
+import { SalesCollection } from "./sales.js";
+import { ProductsCollection } from "./products.js";
 import { client, main } from "./../helpers/db.js";
 
 const db = await main();
+const session = db.client.startSession();
 
 try {
-  await usersCollection(db);
-  await salesCollection(db);
-  await paymentMetodsCollection(db);
-  await categoriesCollection(db);
-  await productsCollection(db);
-  console.log("colecciones creadas con exito");
-} catch (error) {
-  console.log("error al crear colleciones");
-  console.log(error);
-}
+  const config = {
+    readPreference: "primary",
+    readConcern: { level: "local" },
+    writeConcern: { w: "majority" },
+  };
 
-await client.close();
+  const salesColl = new SalesCollection();
+  const productsColl = new ProductsCollection();
+
+  await session.withTransaction(async () => {
+    console.log("Generando colección de sales...");
+    await salesColl.generateCollection(db);
+    console.log("Generando colección de products...");
+    await productsColl.generateCollection(db);
+    console.log("Colecciónes generadas exitosamente.");
+  }, config);
+} catch (error) {
+  console.log("No se pudieron crear las colleciones...");
+  console.log(error);
+} finally {
+  if (session.transaction.isActive) await session.abortTransaction();
+  await session.endSession();
+  await client.close();
+}

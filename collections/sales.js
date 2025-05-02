@@ -1,5 +1,5 @@
-export async function salesCollection(db) {
-  await db.createCollection("sales", {
+export class SalesCollection {
+  #collection = {
     validator: {
       $jsonSchema: {
         bsonType: "object",
@@ -12,8 +12,11 @@ export async function salesCollection(db) {
           "details",
         ],
         properties: {
+          _id: {
+            bsonType: "objectId",
+          },
           reference: {
-            bsonType: "string",
+            bsonType: "number",
           },
           date: {
             bsonType: "date",
@@ -28,10 +31,52 @@ export async function salesCollection(db) {
             bsonType: "objectId",
           },
           details: {
-            bsonType: "object",
+            bsonType: "array",
           },
         },
+        additionalProperties: false,
       },
     },
-  });
+  };
+
+  async #create(db) {
+    await db.createCollection("sales", this.#collection);
+  }
+
+  async #generateIndexes(db) {
+    const sales = db.collection("sales");
+
+    await sales.createIndexes([
+      {
+        key: { reference: 1 },
+        name: "indexReference",
+        unique: true,
+        wiredTigerIndexConfig: 4096,
+        collation: { locale: "es", strength: 1 },
+      },
+      {
+        key: { date: 1 },
+        name: "indexDate",
+        wiredTigerIndexConfig: 4096,
+        collation: { locale: "es", strength: 1 },
+      },
+      {
+        key: { client: 1 },
+        name: "indexClient",
+        wiredTigerIndexConfig: 4096,
+        collation: { locale: "es", strength: 1 },
+      },
+      {
+        key: { seller: 1 },
+        name: "indexSeller",
+        wiredTigerIndexConfig: 4096,
+        collation: { locale: "es", strength: 1 },
+      },
+    ]);
+  }
+
+  async generateCollection(db) {
+    await this.#create(db);
+    await this.#generateIndexes(db);
+  }
 }
