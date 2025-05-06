@@ -35,6 +35,9 @@ export class ProductsCollection {
           stock: {
             bsonType: "number",
           },
+          categoryId: {
+            bsonType: "objectId"
+          },          
           condition: {
             bsonType: "string",
           },

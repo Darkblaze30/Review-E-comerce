@@ -6,7 +6,7 @@ export class SalesCollection {
         required: [
           "reference",
           "date",
-          "paymentMetod",
+          "paymentMethod",
           "client",
           "seller",
           "details",
@@ -21,7 +21,7 @@ export class SalesCollection {
           date: {
             bsonType: "date",
           },
-          paymentMetod: {
+          paymentMethod : {
             bsonType: "objectId",
           },
           client: {
@@ -32,7 +32,16 @@ export class SalesCollection {
           },
           details: {
             bsonType: "array",
-          },
+            items: {
+              bsonType: "object",
+              required: ["productId", "quantity", "price"],
+              properties: {
+                productId: { bsonType: "objectId" },
+                quantity: { bsonType: "number", minimum: 1 },
+                price: { bsonType: "number", minimum: 0 }
+              }
+            }
+          }
         },
         additionalProperties: false,
       },

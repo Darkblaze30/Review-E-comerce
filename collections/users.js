@@ -1,5 +1,71 @@
-export async function usersCollection(db) {
-  await db.createCollection("users", {
+// export async function usersCollection(db) {
+//   await db.createCollection("users", {
+//     validator: {
+//       $jsonSchema: {
+//         bsonType: "object",
+//         required: [
+//           "firstName",
+//           "lastname",
+//           "identificationNumber",
+//           "email",
+//           "phone",
+//           "password",
+//           "active",
+//         ],
+//         properties: {
+//           _id: {
+//             bsonType: "objectId",
+//           },
+//           firstName: {
+//             bsonType: "string",
+//           },
+//           lastname: {
+//             bsonType: "string",
+//           },
+//           identificationNumber: {
+//             bsonType: "string",
+//           },
+//           indentificationType: {
+//             bsonType: "string",
+//             enum: ["cc", "it", "ps", "nit"],
+//           },
+//           email: {
+//             bsonType: "string",
+//           },
+//           phone: {
+//             bsonType: "string",
+//             pattern:
+//               "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$",
+//           },
+//           password: {
+//             bsonType: "string",
+//             pattern: "^[A-Z]",
+//             minLength: 5,
+//             maxLength: 15,
+//           },
+//           place: {
+//             bsonType: "object",
+//           },
+//           userType: {
+//             bsonType: "array",
+//             uniqueItems: true,
+//             enum: ["A", "C", "S"],
+//           },
+//           active: {
+//             bsonType: "bool",
+//           },
+//           registeredDate: {
+//             bsonType: "date",
+//           },
+//         },
+//         additionalProperties: false,
+//       },
+//     },
+//   });
+// }
+
+export class usersCollection {
+  #collection = {
     validator: {
       $jsonSchema: {
         bsonType: "object",
@@ -12,8 +78,10 @@ export async function usersCollection(db) {
           "password",
           "active",
         ],
-        additionalProperties: false,
         properties: {
+          _id: {
+            bsonType: "objectId",
+          },
           firstName: {
             bsonType: "string",
           },
@@ -23,7 +91,7 @@ export async function usersCollection(db) {
           identificationNumber: {
             bsonType: "string",
           },
-          indentificationType: {
+          identificationType: {
             bsonType: "string",
             enum: ["cc", "it", "ps", "nit"],
           },
@@ -32,8 +100,6 @@ export async function usersCollection(db) {
           },
           phone: {
             bsonType: "string",
-            pattern:
-              "^[a-zA-Z0-9.!#$%&'+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)$",
           },
           password: {
             bsonType: "string",
@@ -45,9 +111,8 @@ export async function usersCollection(db) {
             bsonType: "object",
           },
           userType: {
-            bsonType: "array",
-            uniqueItems: true,
-            enum: ["A", "C", "S"],
+            bsonType: "string",
+            enum: ["A", "C", "S"], // A = admin, C = client, S = seller
           },
           active: {
             bsonType: "bool",
@@ -56,7 +121,43 @@ export async function usersCollection(db) {
             bsonType: "date",
           },
         },
+        additionalProperties: false,
       },
     },
-  });
+  };
+
+  async #create(db) {
+    await db.createCollection("users", this.#collection);
+  }
+
+  async #generateIndexes(db) {
+    const users = db.collection("users");
+
+    await users.createIndexes([
+      {
+        key: { identificationNumber: 1 },
+        name: "indexidentificationNumber",
+        unique: true,
+        wiredTigerIndexConfig: 4096,
+        collation: { locale: "es", strength: 1 },
+      },
+      {
+        key: { email: 1 },
+        name: "indexemail",
+        wiredTigerIndexConfig: 4096,
+        collation: { locale: "es", strength: 1 },
+      },
+      {
+        key: { lastname: 1 },
+        name: "indexlastname",
+        wiredTigerIndexConfig: 4096,
+        collation: { locale: "es", strength: 1 },
+      },
+    ]);
+  }
+
+  async generateCollection(db) {
+    await this.#create(db);
+    await this.#generateIndexes(db);
+  }
 }

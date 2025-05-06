@@ -4,8 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "create": "node --env-file=.env collections/initDB.js" 
+    "create": "node --env-file=.env collections/initDB.js", 
+    "data": "node --env-file=.env CRUD/initData.js" 
   },
   "keywords": [],
   "author": "",
