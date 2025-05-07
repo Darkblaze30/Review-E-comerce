@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "create": "node --env-file=.env collections/initDB.js", 
-    "data": "node --env-file=.env CRUD/initData.js" 
+    "data": "node --env-file=.env CRUD/initData.js" ,
+    "CRUD": "node --env-file=.env index.js"
   },
   "keywords": [],
   "author": "",

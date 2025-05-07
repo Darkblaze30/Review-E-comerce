@@ -32,10 +32,10 @@ try {
     await paymentMetodsColl.generateCollection(db);
     console.log("Generando colección de categories...");
     await categoriesColl.generateCollection(db);
-    console.log("Colecciónes generadas exitosamente.");
+    console.log("Colecciónes generadas exitosamente ✅.");
   }, config);
 } catch (error) {
-  console.log("No se pudieron crear las colleciones...");
+  console.log("No se pudieron crear las colleciones ❌.");
   console.log(error);
 } finally {
   if (session.transaction.isActive) await session.abortTransaction();

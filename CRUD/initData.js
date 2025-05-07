@@ -37,10 +37,10 @@ const salesColl = db.collection("sales")
     await category.createMany(categoryData);
     console.log("Insertando datos en la colección de sales...");
     await sales.createMany(salesData);
-    console.log("se insertaron todos los datos correctamente");
+    console.log("se insertaron todos los datos correctamente ✅.");
   }, config);
 } catch (error) {
-  console.log("No se pudo insertar la data ");
+  console.log("No se pudo insertar la data ❌.");
   console.log(error);
 } finally {
   if (session.transaction.isActive) await session.abortTransaction();

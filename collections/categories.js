@@ -1,28 +1,3 @@
-// export async function categoriesCollection(db) {
-//   await db.createCollection("categories", {
-//     validator: {
-//       $jsonSchema: {
-//         bsonType: "object",
-//         required: ["code", "name"],
-//         properties: {
-//           _id: {
-//             bsonType: "objectId",
-//           },
-//           code: {
-//             bsonType: "string",
-//           },
-//           name: {
-//             bsonType: "string",
-//           },
-//           active: {
-//             bsonType: "bool",
-//           },
-//         },
-//         additionalProperties: false,
-//       },
-//     },
-//   });
-// }
 
 export class categoriesCollection {
   #collection = {
